@@ -1,0 +1,1383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Maker-to-Market · A Living Kashi</title>
+<meta name="description" content="Illustrative prototype of Maker-to-Market, a proposed open marketplace layer connecting visitors to Varanasi with its makers on transparent terms.">
+<meta name="theme-color" content="#26364A">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ivory:#F7F3EB; --ivory-2:#EFE8DC; --paper:#FFFDF9;
+  --indigo:#26364A; --indigo-2:#3A4C63;
+  --maroon:#7A1F2B; --maroon-2:#94404A; --maroon-soft:#F3E6E4;
+  --gold:#B8892B; --gold-soft:#F4EAD3;
+  --ink:#282725; --muted:#6B6660; --line:#E4DED3;
+  --ok:#3E6B4E;
+  --serif:"Cormorant Garamond", "Times New Roman", Georgia, serif;
+  --sans:"Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --r:18px; --r-sm:12px;
+  --shadow:0 1px 2px rgba(38,54,74,.06), 0 8px 28px rgba(38,54,74,.08);
+  --gutter:16px;
+  color-scheme: light;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--ivory);color:var(--ink);font-family:var(--sans);font-size:15.5px;line-height:1.55;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+img,svg{display:block;max-width:100%}
+button{font:inherit;cursor:pointer}
+a{color:var(--indigo)}
+:focus-visible{outline:3px solid var(--gold);outline-offset:2px;border-radius:6px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+h1,h2,h3{font-family:var(--serif);color:var(--indigo);font-weight:600;letter-spacing:.2px;margin:0}
+h1{font-size:clamp(38px,6.4vw,64px);line-height:1.02}
+h2{font-size:clamp(30px,4.4vw,44px);line-height:1.08}
+h3{font-size:24px;line-height:1.15}
+p{margin:0}
+.eyebrow{font-size:11.5px;letter-spacing:.16em;text-transform:uppercase;font-weight:700;color:var(--gold)}
+.muted{color:var(--muted)}
+.small{font-size:13px}
+
+/* ---------- top bar ---------- */
+.topbar{position:sticky;top:0;z-index:40;background:rgba(247,243,235,.92);backdrop-filter:saturate(1.2) blur(10px);-webkit-backdrop-filter:saturate(1.2) blur(10px);border-bottom:1px solid var(--line)}
+.topbar-in{max-width:1080px;margin:0 auto;padding:10px var(--gutter);display:flex;align-items:center;gap:14px}
+.brand{display:flex;align-items:center;gap:10px;background:none;border:0;padding:0;color:var(--indigo);text-align:left}
+.brand-mark{width:34px;height:34px;flex:none}
+.brand-name{font-family:var(--serif);font-weight:700;font-size:21px;line-height:1;white-space:nowrap}
+.brand-sub{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--maroon);font-weight:700;margin-top:3px}
+.topnav{margin-left:auto;display:flex;gap:4px}
+.topnav button{background:none;border:0;padding:8px 12px;border-radius:999px;color:var(--indigo);font-weight:600;font-size:14px}
+.topnav button:hover{background:var(--ivory-2)}
+.topnav button[aria-current="page"]{background:var(--indigo);color:#fff}
+.demo-pill{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--maroon);background:var(--maroon-soft);border:1px solid #E8CFCB;padding:5px 10px;border-radius:999px;white-space:nowrap}
+.progress{max-width:1080px;margin:0 auto;padding:0 var(--gutter) 10px;display:flex;align-items:center;gap:10px}
+.progress-label{font-size:12px;color:var(--muted);white-space:nowrap}
+.progress-label b{color:var(--indigo)}
+.dots{display:flex;gap:5px;flex:1}
+.dots button{flex:1;height:5px;border-radius:5px;border:0;padding:0;background:var(--line)}
+.dots button.done{background:var(--gold)}
+.dots button.now{background:var(--maroon)}
+.dots button:hover{transform:scaleY(1.6)}
+
+/* ---------- layout ---------- */
+main{min-height:70vh}
+.screen{display:none;animation:fade .45s ease}
+.screen.active{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.wrap{max-width:1080px;margin:0 auto;padding:28px var(--gutter) 40px}
+.narrow{max-width:760px}
+.stack>*+*{margin-top:16px}
+.row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.grid2{display:grid;grid-template-columns:1.1fr .9fr;gap:28px;align-items:start}
+.grid2>*,.grid3>*{min-width:0}
+.card{background:var(--paper);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow)}
+.pad{padding:22px}
+.note{font-size:12.5px;color:var(--muted);display:flex;gap:8px;align-items:flex-start}
+.note svg{flex:none;margin-top:2px}
+.chip{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;padding:6px 11px;border-radius:999px;background:var(--ivory-2);color:var(--indigo);border:1px solid var(--line)}
+.chip.maroon{background:var(--maroon-soft);color:var(--maroon);border-color:#E8CFCB}
+.chip.gold{background:var(--gold-soft);color:#7A5A16;border-color:#E9D9AE}
+.chip.indigo{background:var(--indigo);color:#fff;border-color:var(--indigo)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border-radius:999px;padding:13px 22px;font-weight:600;font-size:15px;border:1.5px solid transparent;transition:transform .15s ease, background .15s ease;min-height:48px}
+.btn:active{transform:scale(.98)}
+.btn-primary{background:var(--maroon);color:#fff}
+.btn-primary:hover{background:#651823}
+.btn-secondary{background:transparent;color:var(--indigo);border-color:var(--indigo)}
+.btn-secondary:hover{background:var(--ivory-2)}
+.btn-light{background:#fff;color:var(--indigo)}
+.btn-ghost-light{background:rgba(255,255,255,.08);color:#fff;border-color:rgba(255,255,255,.7)}
+.btn-ghost-light:hover{background:rgba(255,255,255,.18)}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+.back{background:none;border:0;color:var(--indigo);font-weight:600;padding:6px 0;display:inline-flex;gap:6px;align-items:center;font-size:14px}
+.divider{height:1px;background:var(--line);margin:22px 0}
+
+/* ---------- hero ---------- */
+.hero{position:relative;min-height:min(86vh,760px);display:flex;align-items:flex-end;color:#fff;overflow:hidden;background:#2b3343}
+.hero-art{position:absolute;inset:0}
+.hero-art svg{width:100%;height:100%}
+.hero-shade{position:absolute;inset:0;background:linear-gradient(180deg,rgba(20,26,38,0) 30%,rgba(20,26,38,.55) 70%,rgba(20,26,38,.82) 100%)}
+.hero-in{position:relative;max-width:1080px;width:100%;margin:0 auto;padding:40px var(--gutter) 46px}
+.hero h1{color:#fff;max-width:none;text-shadow:0 2px 24px rgba(0,0,0,.25)}
+.hero .lead{font-size:clamp(16px,2vw,19px);max-width:44ch;margin-top:14px;color:#F4EEE3}
+.hero .eyebrow{color:#E9CF8F}
+.benefits{display:flex;flex-wrap:wrap;gap:8px;margin-top:20px}
+.benefits span{font-size:13px;font-weight:600;padding:7px 12px;border-radius:999px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.28);backdrop-filter:blur(4px)}
+.hero .row{margin-top:24px}
+.hero-foot{margin-top:22px;font-size:12px;color:#D9D2C6;max-width:60ch}
+
+/* ---------- discover ---------- */
+.searchbar{display:flex;gap:10px;align-items:center;background:var(--paper);border:1.5px solid var(--line);border-radius:999px;padding:6px 8px 6px 16px;margin-top:16px}
+.searchbar:focus-within{border-color:var(--indigo)}
+.searchbar input{flex:1;border:0;background:transparent;font:inherit;font-size:16px;padding:8px 0;color:var(--ink);min-width:0}
+.searchbar input:focus{outline:none}
+.searchbar button[hidden]{display:none}
+.searchbar button{border:0;background:var(--ivory-2);color:var(--indigo);border-radius:999px;padding:8px 12px;font-weight:600;font-size:13px}
+.tabs{display:flex;gap:6px;margin:18px 0 6px;overflow-x:auto;padding-bottom:4px}
+.tabs button{border:1.5px solid var(--line);background:var(--paper);color:var(--indigo);border-radius:999px;padding:9px 16px;font-weight:600;font-size:14px;white-space:nowrap}
+.tabs button[aria-selected="true"]{background:var(--indigo);border-color:var(--indigo);color:#fff}
+.listing{overflow:hidden;display:flex;flex-direction:column}
+.listing .art{aspect-ratio:4/3;overflow:hidden;position:relative}
+.listing .art svg{width:100%;height:100%}
+.listing .art .tag{position:absolute;left:12px;top:12px}
+.listing .body{padding:18px;display:flex;flex-direction:column;gap:8px;flex:1}
+.listing .meta{font-size:13px;color:var(--muted);display:flex;gap:10px;flex-wrap:wrap}
+.listing .price{font-weight:700;color:var(--indigo);font-size:16px}
+.listing .price small{font-weight:500;color:var(--muted);font-size:12.5px}
+.listing .actions{margin-top:auto;padding-top:10px;display:flex;gap:8px;flex-wrap:wrap}
+.listing .actions .btn{padding:10px 16px;min-height:42px;font-size:14px}
+.empty{padding:40px 20px;text-align:center;color:var(--muted)}
+
+/* ---------- maker ---------- */
+.portrait{border-radius:var(--r);overflow:hidden;aspect-ratio:4/5;box-shadow:var(--shadow)}
+.portrait svg{width:100%;height:100%}
+blockquote{margin:18px 0 6px;font-family:var(--serif);font-size:24px;line-height:1.3;color:var(--indigo);font-style:italic;border-left:3px solid var(--gold);padding-left:16px}
+.facts{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.fact{background:var(--ivory);border:1px solid var(--line);border-radius:var(--r-sm);padding:12px 14px}
+.fact .k{font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.fact .v{font-weight:600;color:var(--indigo);margin-top:2px;font-size:14.5px}
+.includes{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.include{text-align:center;padding:16px 10px;border:1px solid var(--line);border-radius:var(--r-sm);background:var(--paper)}
+.include .ic{width:44px;height:44px;margin:0 auto 8px;border-radius:50%;background:var(--gold-soft);display:grid;place-items:center}
+.include p{font-size:13.5px;font-weight:600;color:var(--indigo);line-height:1.3}
+.verify{display:flex;gap:12px;align-items:flex-start;padding:14px 16px;border-radius:var(--r-sm);background:var(--maroon-soft);border:1px solid #E8CFCB}
+.verify ul{margin:6px 0 0;padding-left:18px;font-size:13.5px}
+.guidelines{margin:0;padding-left:18px}
+.guidelines li{margin:4px 0}
+
+/* ---------- booking ---------- */
+.field{margin-top:20px}
+.field>label,.field>.lab{display:block;font-weight:700;color:var(--indigo);font-size:14px;margin-bottom:8px}
+.choice{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px}
+.choice button{flex:none;border:1.5px solid var(--line);background:var(--paper);border-radius:14px;padding:10px 14px;color:var(--indigo);font-weight:600;font-size:14px;text-align:center;min-width:64px}
+.choice button small{display:block;font-weight:500;color:var(--muted);font-size:11.5px}
+.choice button[aria-pressed="true"]{border-color:var(--maroon);background:var(--maroon-soft);color:var(--maroon)}
+.choice button[aria-pressed="true"] small{color:var(--maroon)}
+.stepper{display:inline-flex;align-items:center;border:1.5px solid var(--line);border-radius:999px;background:var(--paper)}
+.stepper button{width:44px;height:44px;border:0;background:none;font-size:20px;color:var(--indigo);border-radius:50%}
+.stepper button:disabled{opacity:.3;cursor:not-allowed}
+.stepper output{min-width:42px;text-align:center;font-weight:700;font-size:17px;color:var(--indigo)}
+select,textarea{width:100%;font:inherit;font-size:16px;padding:12px 14px;border:1.5px solid var(--line);border-radius:var(--r-sm);background:var(--paper);color:var(--ink)}
+textarea{min-height:76px;resize:vertical}
+select:focus,textarea:focus{outline:none;border-color:var(--indigo)}
+.check{display:flex;gap:10px;align-items:flex-start;font-size:14px}
+.check input{width:20px;height:20px;margin-top:2px;accent-color:var(--maroon);flex:none}
+.policy{background:var(--ivory);border:1px dashed #D8CDB9;border-radius:var(--r-sm);padding:14px 16px;font-size:13.5px}
+.summary{position:sticky;top:120px}
+.summary .line{display:flex;justify-content:space-between;gap:10px;padding:7px 0;font-size:14.5px}
+.summary .line span:first-child{color:var(--muted)}
+.summary .line b{color:var(--indigo)}
+.err{color:var(--maroon);font-size:13px;font-weight:600;margin-top:10px;min-height:18px}
+
+/* ---------- receipt ---------- */
+.receipt{max-width:520px;margin:0 auto;position:relative;background:var(--paper);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);padding:26px 24px 22px}
+.receipt::after{content:"";position:absolute;left:0;right:0;bottom:-10px;height:12px;background:radial-gradient(circle at 8px -2px,transparent 8px,var(--paper) 8.5px) repeat-x;background-size:16px 12px;filter:drop-shadow(0 2px 0 var(--line))}
+.rline{display:flex;justify-content:space-between;gap:12px;padding:11px 0;border-bottom:1px dashed var(--line);font-size:15px}
+.rline:last-of-type{border-bottom:0}
+.rline .l small{display:block;color:var(--muted);font-size:12.5px}
+.rline .a{font-weight:700;color:var(--indigo);white-space:nowrap}
+.rline.total{border-top:2px solid var(--indigo);border-bottom:0;margin-top:4px;font-size:17px}
+.rline.payout .a{color:var(--ok)}
+.rline.fee .a{color:var(--maroon)}
+.subhead{font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;font-weight:700;color:var(--muted);margin-top:14px}
+
+/* ---------- confirmation ---------- */
+.confirm{max-width:560px;margin:0 auto;text-align:center}
+.tick{width:84px;height:84px;margin:0 auto 14px;border-radius:50%;background:var(--maroon);display:grid;place-items:center;box-shadow:0 0 0 10px var(--maroon-soft)}
+.ref{font-family:ui-monospace,Menlo,Consolas,monospace;font-weight:700;letter-spacing:.08em;color:var(--indigo);background:var(--gold-soft);padding:6px 12px;border-radius:8px;display:inline-block}
+.banner{background:var(--indigo);color:#fff;border-radius:var(--r-sm);padding:12px 16px;font-size:14px;font-weight:600;display:flex;gap:10px;align-items:center;justify-content:center;text-align:center}
+.banner svg{flex:none}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:6px 16px;text-align:left;font-size:14.5px}
+.kv dt{color:var(--muted)}
+.kv dd{margin:0;font-weight:600;color:var(--indigo)}
+.steps{counter-reset:s;list-style:none;padding:0;margin:0;text-align:left}
+.steps li{counter-increment:s;position:relative;padding-left:38px;margin:10px 0;font-size:14.5px}
+.steps li::before{content:counter(s);position:absolute;left:0;top:0;width:26px;height:26px;border-radius:50%;background:var(--gold-soft);color:#7A5A16;font-weight:700;display:grid;place-items:center;font-size:13px}
+
+/* ---------- impact ---------- */
+.impact-hero{background:var(--indigo);color:#fff;border-radius:22px;padding:30px 26px;position:relative;overflow:hidden}
+.impact-hero h2{color:#fff}
+.impact-hero .eyebrow{color:#E9CF8F}
+.flow{display:grid;grid-template-columns:minmax(150px,.8fr) 50px 2fr;gap:12px;align-items:center;margin-top:24px}
+.pay-box{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.25);border-radius:16px;padding:18px;text-align:center}
+.pay-box .amt{font-family:var(--serif);font-size:44px;font-weight:700;line-height:1;color:#fff}
+.pay-box .lbl{font-size:12.5px;color:#D9D2C6;margin-top:6px}
+.flow-arrow{width:50px;height:24px}
+.split{display:flex;flex-direction:column;gap:10px}
+.bar{height:58px;border-radius:14px;overflow:hidden;display:flex;background:rgba(255,255,255,.1)}
+.bar .seg{display:flex;align-items:center;padding:0 14px;font-weight:700;font-size:15px;white-space:nowrap;width:0;transition:width 1.2s cubic-bezier(.2,.8,.2,1)}
+.bar .prov{background:linear-gradient(90deg,#B8892B,#CFA54A);color:#2A2111}
+.bar .plat{background:var(--maroon);color:#fff;justify-content:center;padding:0}
+.legend{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.legend>div{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.18);border-radius:12px;padding:10px 12px}
+.legend .big{font-family:var(--serif);font-size:30px;font-weight:700;line-height:1}
+.legend .sm{font-size:12.5px;color:#D9D2C6}
+.legend .gold{color:#E9CF8F}
+.legend .rose{color:#F0B8BF}
+.impact-hero .note{color:#C9C2B6;margin-top:16px}
+.per100{margin-top:16px;font-size:14px;color:#EDE6D9}
+.per100 b{color:#E9CF8F}
+.principles{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:22px}
+.principle .num{font-family:var(--serif);font-size:36px;color:var(--gold);line-height:1;font-weight:700}
+.principle h3{font-size:22px;margin:6px 0}
+.context{margin-top:18px;background:var(--gold-soft);border:1px solid #E9D9AE;border-radius:var(--r-sm);padding:14px 16px;font-size:14px}
+
+/* ---------- provenance ---------- */
+.product-art{border-radius:var(--r);overflow:hidden;box-shadow:var(--shadow);aspect-ratio:1/1}
+.product-art svg{width:100%;height:100%}
+.thumbs{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+.thumbs div{border-radius:12px;overflow:hidden;aspect-ratio:4/3;border:1px solid var(--line)}
+.thumbs svg{width:100%;height:100%}
+.ptable{width:100%;border-collapse:collapse;font-size:14px}
+.ptable th,.ptable td{text-align:left;padding:10px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+.ptable th{font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.ptable td:first-child{font-weight:600;color:var(--indigo)}
+.status{display:inline-block;font-size:12px;font-weight:700;padding:3px 9px;border-radius:999px;white-space:nowrap}
+.status.pending{background:var(--maroon-soft);color:var(--maroon)}
+.status.demo{background:var(--gold-soft);color:#7A5A16}
+.status.sys{background:var(--ivory-2);color:var(--indigo)}
+.record{display:none;margin-top:18px}
+.record.open{display:block;animation:fade .35s ease}
+.qr-tag{display:flex;gap:14px;align-items:center;padding:14px;border:1.5px dashed #D8CDB9;border-radius:var(--r-sm);background:var(--paper);text-align:left;width:100%}
+.qr-tag:hover{border-color:var(--maroon)}
+.qr-tag svg{width:58px;height:58px;flex:none}
+.table-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+
+/* ---------- network ---------- */
+.net{position:relative;margin-top:26px;display:flex;flex-direction:column;align-items:center;gap:0}
+.tier{width:100%;max-width:640px;text-align:center;border-radius:18px;padding:18px 20px}
+.tier h3{font-size:24px}
+.tier p{font-size:13.5px;margin-top:4px}
+.tier.providers{background:var(--paper);border:1.5px solid var(--line)}
+.tier.m2m{background:var(--maroon);color:#fff;box-shadow:0 12px 30px rgba(122,31,43,.25)}
+.tier.m2m h3{color:#fff}
+.tier.m2m p{color:#F3DCDD}
+.tier.grid{background:var(--ivory-2);border:1.5px dashed #CDBFA6;max-width:520px}
+.tier.grid h3{font-size:19px}
+.connector{width:2px;height:34px;background:repeating-linear-gradient(180deg,var(--gold) 0 6px,transparent 6px 11px)}
+.connector.arrow{position:relative}
+.connector.arrow::after{content:"";position:absolute;left:50%;bottom:-2px;transform:translateX(-50%);border:6px solid transparent;border-top:8px solid var(--gold)}
+.fan{width:100%;max-width:640px;position:relative;height:34px}
+.fan svg{width:100%;height:100%}
+.channels{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;width:100%;max-width:640px}
+.channel{border:1.5px solid var(--line);background:var(--paper);border-radius:16px;padding:16px 10px;text-align:center;color:var(--indigo);font-weight:700}
+.channel .ic{width:42px;height:42px;margin:0 auto 6px;border-radius:12px;background:var(--ivory-2);display:grid;place-items:center}
+.channel[aria-pressed="true"]{border-color:var(--indigo);background:var(--indigo);color:#fff}
+.channel[aria-pressed="true"] .ic{background:rgba(255,255,255,.14)}
+.channel-explain{max-width:640px;margin:16px auto 0;min-height:66px;text-align:center;font-size:14.5px}
+.built-on{font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;font-weight:700;color:var(--muted);margin:10px 0 6px}
+
+/* ---------- pilot ---------- */
+.gantt{margin-top:20px}
+.gantt-bar{display:flex;border-radius:14px;overflow:hidden;height:16px;box-shadow:inset 0 0 0 1px var(--line)}
+.gantt-bar div{height:100%}
+.gantt-scale{display:flex;justify-content:space-between;font-size:11.5px;color:var(--muted);margin-top:6px}
+.phases{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:16px}
+.phase{border-radius:16px;padding:16px;background:var(--paper);border:1px solid var(--line);border-top:5px solid var(--c)}
+.phase .when{font-weight:700;color:var(--c);font-size:13px;letter-spacing:.04em}
+.phase h3{font-size:20px;margin:4px 0 6px}
+.phase p{font-size:13.5px;color:var(--muted)}
+.metrics{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:14px}
+.metric{display:flex;flex-direction:column;align-items:flex-start;gap:10px;padding:14px 16px;border:1px solid var(--line);border-radius:14px;background:var(--paper)}
+.metric p{font-weight:600;color:var(--indigo);font-size:14.5px;display:flex;align-items:baseline;gap:2px}
+.metric .n{font-family:var(--serif);font-size:26px;color:var(--gold);font-weight:700;margin-right:10px}
+.safeguards{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.closing{margin-top:30px;text-align:center;padding:32px 22px;border-radius:22px;background:var(--indigo);color:#fff}
+.closing p{font-family:var(--serif);font-size:clamp(22px,3vw,30px);line-height:1.3;max-width:30ch;margin:0 auto}
+.closing .row{justify-content:center;margin-top:20px}
+
+/* ---------- dashboard ---------- */
+.dash{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:20px}
+.kpi{padding:18px;border-radius:16px;background:var(--paper);border:1px solid var(--line);min-height:150px;display:flex;flex-direction:column}
+.kpi .k{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.kpi .v{font-family:var(--serif);font-size:24px;color:var(--indigo);font-weight:600;margin-top:auto}
+.kpi .flat{height:34px;margin-top:10px;border-radius:8px;background:repeating-linear-gradient(135deg,var(--ivory-2) 0 8px,var(--ivory) 8px 16px);display:grid;place-items:center;font-size:11.5px;color:var(--muted);font-weight:600}
+
+/* ---------- modal ---------- */
+.modal{position:fixed;inset:0;z-index:80;display:none;align-items:flex-end;justify-content:center;background:rgba(20,26,38,.55);padding:0}
+.modal.open{display:flex;animation:fade .25s ease}
+.sheet{background:var(--ivory);width:100%;max-width:620px;border-radius:24px 24px 0 0;padding:26px 22px calc(26px + env(safe-area-inset-bottom));max-height:88vh;overflow:auto}
+.sheet .close{float:right;border:0;background:var(--ivory-2);border-radius:50%;width:38px;height:38px;font-size:18px;color:var(--indigo)}
+.how{list-style:none;padding:0;margin:18px 0}
+.how li{display:flex;gap:14px;align-items:flex-start;padding:12px 0;border-bottom:1px solid var(--line)}
+.how .n{width:36px;height:36px;flex:none;border-radius:50%;background:var(--maroon);color:#fff;display:grid;place-items:center;font-weight:700}
+.how b{color:var(--indigo)}
+
+/* ---------- footer & bottom nav ---------- */
+footer{border-top:1px solid var(--line);background:var(--ivory-2)}
+footer .wrap{padding:22px var(--gutter);font-size:12.5px;color:var(--muted)}
+footer b{color:var(--indigo)}
+.bottomnav{display:none}
+
+@media (max-width: 860px){
+  .grid3{grid-template-columns:1fr 1fr}
+  .grid2{grid-template-columns:1fr}
+  .summary{position:static}
+  .principles{grid-template-columns:1fr}
+  .phases{grid-template-columns:1fr 1fr}
+  .dash{grid-template-columns:1fr 1fr}
+}
+@media (max-width: 640px){
+  body{font-size:15px;padding-bottom:calc(72px + env(safe-area-inset-bottom))}
+  .topnav{display:none}
+  .grid3{grid-template-columns:1fr}
+  .includes{grid-template-columns:1fr 1fr 1fr}
+  .facts{grid-template-columns:1fr}
+  .flow{grid-template-columns:1fr;gap:10px}
+  .flow-arrow{transform:rotate(90deg);margin:0 auto}
+  .metrics{grid-template-columns:1fr}
+  .phases{grid-template-columns:1fr}
+  .dash{grid-template-columns:1fr}
+  .channels{grid-template-columns:repeat(3,1fr);gap:8px}
+  .channel{padding:12px 6px;font-size:13px}
+  .legend .big{font-size:26px}
+  .hero{min-height:88vh}
+  .wrap{padding-top:22px}
+  .demo-pill{font-size:10px;padding:4px 8px;margin-left:auto}
+  .pill-more{display:none}
+  .bar .plat{font-size:0}
+  .brand-name{font-size:19px}
+  .bottomnav{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:50;background:rgba(255,253,249,.97);border-top:1px solid var(--line);padding:6px 6px calc(6px + env(safe-area-inset-bottom));backdrop-filter:blur(10px)}
+  .bottomnav button{flex:1;background:none;border:0;color:var(--muted);font-size:11px;font-weight:600;display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 2px;border-radius:12px}
+  .bottomnav button svg{width:22px;height:22px}
+  .bottomnav button[aria-current="page"]{color:var(--maroon);background:var(--maroon-soft)}
+}
+@media (prefers-reduced-motion: reduce){
+  *{animation:none!important;transition:none!important}
+}
+</style>
+</head>
+<body>
+
+<!-- ===== Shared SVG definitions (patterns & gradients used by the illustrations) ===== -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <linearGradient id="dawnSky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#2C3A55"/>
+      <stop offset=".38" stop-color="#7C5A6A"/>
+      <stop offset=".62" stop-color="#D8946B"/>
+      <stop offset=".8" stop-color="#F2C98A"/>
+      <stop offset="1" stop-color="#F7E2B5"/>
+    </linearGradient>
+    <linearGradient id="river" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#E7B57E"/>
+      <stop offset=".45" stop-color="#8A6A72"/>
+      <stop offset="1" stop-color="#2B3550"/>
+    </linearGradient>
+    <radialGradient id="sunGlow" cx=".5" cy=".5" r=".5">
+      <stop offset="0" stop-color="#FFF4D6" stop-opacity="1"/>
+      <stop offset=".35" stop-color="#FCE0A2" stop-opacity=".85"/>
+      <stop offset="1" stop-color="#F2C98A" stop-opacity="0"/>
+    </radialGradient>
+    <pattern id="buta" width="56" height="64" patternUnits="userSpaceOnUse">
+      <rect width="56" height="64" fill="#7A1F2B"/>
+      <g fill="none" stroke="#D4AA4F" stroke-width="1.6">
+        <path d="M28 10c8 4 11 13 6 20-4 5-11 5-13 0-2-4 2-8 6-6"/>
+        <path d="M28 10c-3 6-2 12 2 15"/>
+        <circle cx="28" cy="8" r="2" fill="#D4AA4F"/>
+        <path d="M0 42c8 4 11 13 6 20" opacity=".0"/>
+      </g>
+      <g fill="#D4AA4F">
+        <circle cx="0" cy="44" r="1.6"/><circle cx="56" cy="44" r="1.6"/><circle cx="14" cy="52" r="1.2"/><circle cx="42" cy="52" r="1.2"/>
+      </g>
+    </pattern>
+    <pattern id="warp" width="10" height="10" patternUnits="userSpaceOnUse">
+      <rect width="10" height="10" fill="#3A2A2E"/>
+      <line x1="2" y1="0" x2="2" y2="10" stroke="#C99A3E" stroke-width="1" opacity=".75"/>
+      <line x1="6" y1="0" x2="6" y2="10" stroke="#E2C27A" stroke-width=".8" opacity=".55"/>
+    </pattern>
+    <pattern id="jaal" width="40" height="40" patternUnits="userSpaceOnUse">
+      <rect width="40" height="40" fill="#6E1A25"/>
+      <path d="M20 0 L40 20 L20 40 L0 20 Z" fill="none" stroke="#C99A3E" stroke-width="1"/>
+      <circle cx="20" cy="20" r="3.2" fill="#D9B45E"/>
+      <circle cx="0" cy="0" r="1.6" fill="#D9B45E"/><circle cx="40" cy="0" r="1.6" fill="#D9B45E"/>
+      <circle cx="0" cy="40" r="1.6" fill="#D9B45E"/><circle cx="40" cy="40" r="1.6" fill="#D9B45E"/>
+    </pattern>
+    <pattern id="border" width="24" height="24" patternUnits="userSpaceOnUse">
+      <rect width="24" height="24" fill="#B8892B"/>
+      <path d="M0 12 L12 0 L24 12 L12 24 Z" fill="#8E6620"/>
+      <circle cx="12" cy="12" r="3" fill="#F2DDA4"/>
+    </pattern>
+  </defs>
+</svg>
+
+<!-- ===== Top bar ===== -->
+<header class="topbar">
+  <div class="topbar-in">
+    <button class="brand" data-go="welcome" aria-label="Maker-to-Market home">
+      <svg class="brand-mark" viewBox="0 0 40 40" aria-hidden="true">
+        <rect x="1" y="1" width="38" height="38" rx="11" fill="#7A1F2B"/>
+        <g stroke="#E9CF8F" stroke-width="2" fill="none" stroke-linecap="round">
+          <path d="M11 10v20M17 10v20M23 10v20M29 10v20"/>
+          <path d="M8 16h24M8 24h24" stroke="#fff" stroke-width="2.4"/>
+        </g>
+      </svg>
+      <span><span class="brand-name">Maker-to-Market</span><span class="brand-sub" style="display:block">A Living Kashi</span></span>
+    </button>
+    <nav class="topnav" aria-label="Main">
+      <button data-go="discover" data-nav="discover">Discover</button>
+      <button data-go="discover" data-tab="makers" data-nav="makers">Makers</button>
+      <button data-go="mybooking" data-nav="mybooking">My demo booking</button>
+      <button data-modal="how" data-nav="how">How it works</button>
+    </nav>
+    <span class="demo-pill" title="All listings, people, prices and records are illustrative samples">Prototype<span class="pill-more"> · illustrative</span></span>
+  </div>
+  <div class="progress" id="progress">
+    <span class="progress-label" id="progressLabel"></span>
+    <div class="dots" id="dots" role="navigation" aria-label="Journey steps"></div>
+  </div>
+</header>
+
+<main id="app">
+
+<!-- ===== 01 WELCOME ===== -->
+<section class="screen" id="s-welcome" aria-labelledby="h-welcome">
+  <div class="hero">
+    <div class="hero-art" aria-hidden="true">
+      <svg viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice">
+        <rect width="1440" height="900" fill="url(#dawnSky)"/>
+        <circle cx="1010" cy="430" r="230" fill="url(#sunGlow)"/>
+        <circle cx="1010" cy="440" r="46" fill="#FFF1CF"/>
+        <!-- distant birds -->
+        <g fill="none" stroke="#3A3446" stroke-width="2" stroke-linecap="round" opacity=".55">
+          <path d="M760 250q8-8 16 0q8-8 16 0"/><path d="M820 220q6-6 12 0q6-6 12 0"/><path d="M700 290q6-6 12 0q6-6 12 0"/>
+        </g>
+        <!-- ghat skyline -->
+        <g fill="#3B2E3C">
+          <path d="M0 520 L0 430 L60 430 L60 400 L120 400 L120 440 L170 440 L170 380 L205 380 L215 350 L225 380 L260 380 L260 420 L330 420 L330 395 L400 395 L400 430 L445 430 L445 360 L470 330 L495 360 L495 430 L560 430 L560 405 L640 405 L640 440 L700 440 L700 412 L760 412 L760 445 L820 445 L820 470 L860 470 L860 598 L1440 598 L1440 612 L0 612 Z"/>
+        </g>
+        <g fill="#4A3946" opacity=".95">
+          <path d="M0 560 L0 470 L90 470 L90 450 L150 450 L150 480 L230 480 L230 455 L300 455 L300 485 L380 485 L380 462 L470 462 L470 490 L560 490 L560 470 L650 470 L650 500 L740 500 L740 480 L820 480 L820 505 L870 505 L870 560 Z"/>
+        </g>
+        <!-- windows -->
+        <g fill="#F2C98A" opacity=".55">
+          <rect x="70" y="410" width="6" height="10"/><rect x="132" y="412" width="6" height="10"/><rect x="185" y="392" width="6" height="10"/><rect x="345" y="405" width="6" height="10"/><rect x="415" y="405" width="6" height="10"/><rect x="580" y="415" width="6" height="10"/><rect x="655" y="450" width="6" height="10"/><rect x="775" y="455" width="6" height="10"/>
+        </g>
+        <!-- steps -->
+        <g stroke="#6B5160" stroke-width="2" opacity=".7">
+          <path d="M0 575 H860"/><path d="M0 590 H840"/><path d="M0 605 H820"/><path d="M0 620 H800"/>
+        </g>
+        <path d="M0 560 L860 560 L800 630 L0 630 Z" fill="#5A4452" opacity=".55"/>
+        <!-- river -->
+        <rect y="610" width="1440" height="290" fill="url(#river)"/>
+        <rect x="985" y="610" width="50" height="260" fill="#FCE3AE" opacity=".35"/>
+        <g stroke="#FFE8B8" stroke-width="2" stroke-linecap="round" opacity=".6">
+          <path d="M960 650h100"/><path d="M975 680h70"/><path d="M950 715h120"/><path d="M985 750h50"/><path d="M965 790h90"/>
+        </g>
+        <g stroke="#F7E2B5" stroke-width="1.5" opacity=".25">
+          <path d="M120 680h160"/><path d="M420 720h120"/><path d="M1180 700h140"/><path d="M640 790h200"/><path d="M1240 820h110"/>
+        </g>
+        <!-- boats -->
+        <g fill="#2A2232">
+          <path d="M560 700 q90 22 180 0 l-14 16 h-152 z"/>
+          <path d="M620 700 v-28 l30 28 z" opacity=".9"/>
+          <rect x="638" y="672" width="2.5" height="30"/>
+          <path d="M1150 760 q70 16 140 0 l-10 12 h-120 z"/>
+          <path d="M300 740 q55 12 110 0 l-8 10 h-94 z"/>
+        </g>
+        <g fill="#2A2232"><circle cx="600" cy="690" r="5"/><rect x="596" y="694" width="8" height="10" rx="3"/></g>
+      </svg>
+    </div>
+    <div class="hero-shade"></div>
+    <div class="hero-in">
+      <p class="eyebrow">Maker-to-Market · A Living Kashi</p>
+      <h1 id="h-welcome" style="margin-top:10px">Come for Kashi.<br>Connect with its makers.</h1>
+      <p class="lead">Discover the crafts, music and stories kept alive by the people of Varanasi.</p>
+      <div class="benefits"><span>Meet local makers</span><span>Book meaningful experiences</span><span>Know what you are supporting</span></div>
+      <div class="row">
+        <button class="btn btn-light" data-go="discover">Discover Kashi →</button>
+        <button class="btn btn-ghost-light" data-modal="how">How it works</button>
+      </div>
+      <p class="hero-foot">An illustrative prototype of the policy proposal in “From Footfall to Value” (VBYL 2027). Listings, people, prices and records are samples, not live offers. Not a government service.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 02 DISCOVER ===== -->
+<section class="screen" id="s-discover" aria-labelledby="h-discover">
+  <div class="wrap">
+    <div class="row" style="justify-content:space-between">
+      <span class="chip"><svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true"><path fill="#7A1F2B" d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7zm0 9.5a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5z"/></svg>Varanasi, Uttar Pradesh</span>
+      <span class="chip gold">Illustrative sample listings · not live offers</span>
+    </div>
+    <h2 id="h-discover" style="margin-top:16px">Discover Kashi through the people who keep it alive</h2>
+    <form class="searchbar" id="searchForm" role="search" onsubmit="return false">
+      <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="#6B6660" stroke-width="2" d="M11 4a7 7 0 1 0 0 14 7 7 0 0 0 0-14zm9 16-4.3-4.3"/></svg>
+      <label class="sr" for="search">Search</label>
+      <input id="search" type="search" placeholder="What would you like to discover?" autocomplete="off">
+      <button type="button" id="clearSearch" hidden>Clear</button>
+    </form>
+    <div class="tabs" role="tablist" aria-label="Categories">
+      <button role="tab" data-cat="experiences" aria-selected="true">Experiences</button>
+      <button role="tab" data-cat="makers" aria-selected="false">Meet the makers</button>
+      <button role="tab" data-cat="crafts" aria-selected="false">Crafts</button>
+    </div>
+    <div class="grid3" id="cards" style="margin-top:12px"></div>
+    <p class="note" style="margin-top:18px"><svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#B8892B"/><path d="M12 7v6M12 16v1" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/></svg>Prices are placeholders to demonstrate the interface, not market-rate recommendations. Images are illustrations, not photographs of participating providers.</p>
+  </div>
+</section>
+
+<!-- ===== 03 MAKER ===== -->
+<section class="screen" id="s-maker" aria-labelledby="h-maker">
+  <div class="wrap">
+    <button class="back" data-go="discover">← All experiences</button>
+    <div class="grid2" style="margin-top:12px">
+      <div>
+        <div class="portrait" id="makerArt"></div>
+      </div>
+      <div class="stack">
+        <span class="chip maroon" id="makerBadge">Illustrative provider profile · not verified</span>
+        <h2 id="h-maker"></h2>
+        <p class="muted" id="makerMeta"></p>
+        <blockquote id="makerQuote"></blockquote>
+        <p class="small muted">Illustrative profile text, not a real artisan testimonial.</p>
+        <div class="row">
+          <button class="btn btn-primary" data-go="book">Check availability</button>
+          <button class="btn btn-secondary" id="exploreCraft">Explore the craft</button>
+        </div>
+      </div>
+    </div>
+    <div class="divider"></div>
+    <div class="grid2">
+      <div class="stack">
+        <h3>What your visit includes</h3>
+        <div class="includes" id="makerIncludes"></div>
+        <h3 id="aboutCraft" tabindex="-1" style="margin-top:26px">About the craft</h3>
+        <p id="makerAbout"></p>
+        <h3 style="margin-top:26px">Visitor guidelines</h3>
+        <ul class="guidelines" id="makerGuidelines"></ul>
+      </div>
+      <div class="stack">
+        <div class="facts" id="makerFacts"></div>
+        <div class="verify">
+          <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="none" stroke="#7A1F2B" stroke-width="2"/><path d="M12 7v6M12 16v1" stroke="#7A1F2B" stroke-width="2.4" stroke-linecap="round"/></svg>
+          <div>
+            <b style="color:var(--maroon)">Verification status: not verified (demonstration)</b>
+            <p class="small" style="margin-top:4px">In the pilot, a provider would be marked verified only after:</p>
+            <ul>
+              <li>identity and workshop confirmation by a local institution</li>
+              <li>review of craft and production method</li>
+              <li>agreement to disclosed terms, refunds and grievance redressal</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 04 BOOK ===== -->
+<section class="screen" id="s-book" aria-labelledby="h-book">
+  <div class="wrap">
+    <button class="back" data-go="maker">← Back to experience</button>
+    <div class="grid2" style="margin-top:12px">
+      <div>
+        <p class="eyebrow">Demonstration availability · not a live reservation system</p>
+        <h2 id="h-book" style="margin-top:8px">Book the experience</h2>
+        <p class="muted" id="bookExpName" style="margin-top:6px"></p>
+
+        <div class="field">
+          <span class="lab" id="lab-date">Date <span class="muted small">(required)</span></span>
+          <div class="choice" id="dateChoice" role="group" aria-labelledby="lab-date"></div>
+        </div>
+        <div class="field">
+          <span class="lab" id="lab-time">Time slot <span class="muted small">(required)</span></span>
+          <div class="choice" id="timeChoice" role="group" aria-labelledby="lab-time"></div>
+        </div>
+        <div class="field">
+          <span class="lab" id="lab-vis">Number of visitors</span>
+          <div class="row">
+            <div class="stepper" role="group" aria-labelledby="lab-vis">
+              <button id="visMinus" aria-label="Fewer visitors">−</button>
+              <output id="visCount" aria-live="polite">1</output>
+              <button id="visPlus" aria-label="More visitors">+</button>
+            </div>
+            <span class="small muted" id="visHint"></span>
+          </div>
+        </div>
+        <div class="field">
+          <span class="lab">Duration</span>
+          <span class="chip" id="durChip"></span>
+        </div>
+        <div class="field">
+          <label for="lang">Language preference</label>
+          <select id="lang">
+            <option>Hindi</option><option>English</option><option>Bhojpuri</option><option>Hindi with English interpretation</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="access">Accessibility or special requirements <span class="muted small">(optional · not stored)</span></label>
+          <textarea id="access" placeholder="For example: step-free access, seating, a slower pace"></textarea>
+        </div>
+        <div class="field policy">
+          <b style="color:var(--indigo)">Cancellation and refunds (sample terms)</b>
+          <p style="margin-top:4px">Free cancellation up to 24 hours before the session. Within 24 hours, 50% is refunded. If the provider cancels, you receive a full refund. Disputes go to a named grievance officer.</p>
+        </div>
+        <div class="field policy" style="border-style:solid;background:var(--gold-soft);border-color:#E9D9AE">
+          <b style="color:#6B4E12">Community guidelines</b>
+          <p style="margin-top:4px">Please ask before photographing people or recording demonstrations. Some techniques and spaces may be private.</p>
+          <label class="check" style="margin-top:10px"><input type="checkbox" id="agree"> I have read and will respect the community guidelines.</label>
+        </div>
+        <p class="err" id="bookErr" role="alert"></p>
+        <div class="row" style="margin-top:6px">
+          <button class="btn btn-primary" id="toReview">Review booking</button>
+          <button class="btn btn-secondary" data-go="maker">Back to experience</button>
+        </div>
+      </div>
+      <aside class="card pad summary" aria-label="Booking summary">
+        <p class="eyebrow">Your selection</p>
+        <h3 id="sumTitle" style="margin:6px 0 10px"></h3>
+        <div class="line"><span>Date</span><b id="sumDate">Select a date</b></div>
+        <div class="line"><span>Time</span><b id="sumTime">Select a time</b></div>
+        <div class="line"><span>Visitors</span><b id="sumVis"></b></div>
+        <div class="line"><span>Duration</span><b id="sumDur"></b></div>
+        <div class="line"><span>Language</span><b id="sumLang"></b></div>
+        <div class="divider" style="margin:12px 0"></div>
+        <div class="line"><span>Price</span><b id="sumPrice"></b></div>
+        <p class="small muted" style="margin-top:6px">The platform fee is shown on the next screen, before you confirm.</p>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 05 REVIEW ===== -->
+<section class="screen" id="s-review" aria-labelledby="h-review">
+  <div class="wrap narrow" style="max-width:640px">
+    <button class="back" data-go="book">← Edit booking</button>
+    <div style="text-align:center;margin:10px 0 22px">
+      <p class="eyebrow">Step 5 · Transparent pricing</p>
+      <h2 id="h-review" style="margin-top:8px">Review your booking</h2>
+      <p class="muted" style="margin-top:8px">You can see the price, platform fee and expected provider payout before confirming.</p>
+    </div>
+    <div class="receipt" id="receipt"></div>
+    <p class="note" style="margin-top:26px;justify-content:center;text-align:center">Illustrative amounts. The provider receives the experience price minus the stated platform fee; any other costs or taxes are excluded. The 5% fee is a sample, not an adopted commission policy.</p>
+    <div class="row" style="justify-content:center;margin-top:18px">
+      <button class="btn btn-primary" id="confirmBtn">Confirm demo booking</button>
+      <button class="btn btn-secondary" data-go="book">Edit booking</button>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 06 CONFIRMED ===== -->
+<section class="screen" id="s-confirmed" aria-labelledby="h-confirmed">
+  <div class="wrap">
+    <div class="confirm" id="confirmBody"></div>
+  </div>
+</section>
+
+<!-- ===== 07 IMPACT ===== -->
+<section class="screen" id="s-impact" aria-labelledby="h-impact">
+  <div class="wrap">
+    <div class="impact-hero">
+      <p class="eyebrow">Your visit, your impact</p>
+      <h2 id="h-impact" style="margin-top:8px">See exactly where your money goes</h2>
+      <div class="flow">
+        <div class="pay-box"><div class="amt" id="impTotal">₹500</div><div class="lbl">Visitor pays</div></div>
+        <svg class="flow-arrow" viewBox="0 0 50 24" aria-hidden="true"><path d="M2 12h40" stroke="#E9CF8F" stroke-width="2.5"/><path d="M36 5l9 7-9 7" fill="none" stroke="#E9CF8F" stroke-width="2.5"/></svg>
+        <div class="split">
+          <div class="bar" role="img" id="impBar" aria-label="">
+            <div class="seg prov" id="segProv">Provider payout</div>
+            <div class="seg plat" id="segPlat">5%</div>
+          </div>
+          <div class="legend">
+            <div><div class="big gold" id="impPayout">₹475</div><div class="sm">Provider payout</div></div>
+            <div><div class="big rose" id="impFee">₹25</div><div class="sm">Platform fee</div></div>
+          </div>
+        </div>
+      </div>
+      <p class="per100" id="per100"></p>
+      <p class="note">Illustrative transaction only. Payout is shown before any of the provider's own costs; it is not profit or net income. Taxes and any unlisted costs are excluded.</p>
+    </div>
+
+    <div class="principles">
+      <div class="card pad principle"><div class="num">01</div><h3>Transparent terms</h3><p>Prices, fees and settlement conditions are disclosed to visitors and providers before anyone commits.</p></div>
+      <div class="card pad principle"><div class="num">02</div><h3>Provider choice</h3><p>Makers see the terms before deciding to list, and can set their own prices, hours and group sizes.</p></div>
+      <div class="card pad principle"><div class="num">03</div><h3>Community consent</h3><p>Providers and communities set boundaries for what is offered, photographed or kept private.</p></div>
+    </div>
+
+    <div class="context"><b>Why this matters.</b> Reporting cited in the essay finds that a weaver may receive roughly 15–20% of a handloom sari's final price once it passes through several hands. Maker-to-Market does not promise a particular income; it makes the share reaching the maker visible and measurable.</div>
+
+    <div class="row" style="margin-top:22px">
+      <button class="btn btn-primary" data-go="provenance">Explore product provenance</button>
+      <button class="btn btn-secondary" data-go="network">How the network works</button>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 08 PROVENANCE ===== -->
+<section class="screen" id="s-provenance" aria-labelledby="h-prov">
+  <div class="wrap">
+    <button class="back" data-go="impact">← Your impact</button>
+    <div class="grid2" style="margin-top:12px">
+      <div>
+        <div class="product-art" aria-hidden="true">
+          <svg viewBox="0 0 400 400" preserveAspectRatio="xMidYMid slice">
+            <rect width="400" height="400" fill="url(#jaal)"/>
+            <path d="M0 300 C120 270 220 330 400 290 L400 400 L0 400 Z" fill="url(#buta)"/>
+            <path d="M0 300 C120 270 220 330 400 290" stroke="url(#border)" stroke-width="26" fill="none"/>
+            <path d="M0 300 C120 270 220 330 400 290" stroke="#F2DDA4" stroke-width="1.2" fill="none" transform="translate(0,-14)"/>
+            <path d="M0 300 C120 270 220 330 400 290" stroke="#F2DDA4" stroke-width="1.2" fill="none" transform="translate(0,14)"/>
+            <path d="M260 0 C300 120 250 230 330 400" stroke="rgba(255,255,255,.12)" stroke-width="40" fill="none"/>
+            <path d="M120 0 C150 140 90 250 140 400" stroke="rgba(0,0,0,.12)" stroke-width="30" fill="none"/>
+          </svg>
+        </div>
+        <div class="thumbs" aria-hidden="true">
+          <div><svg viewBox="0 0 200 150" preserveAspectRatio="xMidYMid slice"><rect width="200" height="150" fill="url(#buta)"/></svg></div>
+          <div><svg viewBox="0 0 200 150" preserveAspectRatio="xMidYMid slice"><rect width="200" height="150" fill="url(#warp)"/><rect x="0" y="70" width="200" height="22" fill="#7A1F2B"/><rect x="0" y="70" width="200" height="22" fill="url(#border)" opacity=".7"/><rect x="40" y="58" width="120" height="8" rx="4" fill="#8B6A4E"/><rect x="40" y="96" width="120" height="8" rx="4" fill="#8B6A4E"/></svg></div>
+        </div>
+        <p class="small muted" style="margin-top:8px">Illustrations of a brocade sari and a loom, not photographs of a listed product.</p>
+      </div>
+      <div class="stack">
+        <span class="chip maroon">Demonstration record · not independently authenticated</span>
+        <h2 id="h-prov">A sari with a story</h2>
+        <p class="muted">A QR-linked provenance record shows who supplied each piece of information and what has actually been checked. A QR code only points to the record; the record is only as reliable as its verification.</p>
+        <div class="facts">
+          <div class="fact"><div class="k">Product</div><div class="v">Illustrative Banarasi silk sari</div></div>
+          <div class="fact"><div class="k">Maker</div><div class="v">Sample maker profile</div></div>
+          <div class="fact"><div class="k">Place of production</div><div class="v">To be verified</div></div>
+          <div class="fact"><div class="k">Production method</div><div class="v">To be verified</div></div>
+        </div>
+        <button class="qr-tag" id="qrTag" aria-controls="record" aria-expanded="false">
+          <svg viewBox="0 0 58 58" aria-hidden="true"><rect width="58" height="58" rx="8" fill="#26364A"/><g fill="#F7F3EB"><rect x="8" y="8" width="14" height="14" rx="2"/><rect x="36" y="8" width="14" height="14" rx="2"/><rect x="8" y="36" width="14" height="14" rx="2"/></g><g fill="#26364A"><rect x="12" y="12" width="6" height="6"/><rect x="40" y="12" width="6" height="6"/><rect x="12" y="40" width="6" height="6"/></g><g fill="#E9CF8F"><rect x="28" y="28" width="4" height="4"/><rect x="36" y="30" width="4" height="4"/><rect x="44" y="38" width="4" height="4"/><rect x="30" y="40" width="4" height="4"/><rect x="38" y="46" width="4" height="4"/></g></svg>
+          <span><b style="color:var(--indigo)">Sample product tag</b><br><span class="small muted">Tap to open the provenance record. This demo tag is not a scannable code.</span></span>
+        </button>
+        <button class="btn btn-primary" id="viewRecord" aria-controls="record" aria-expanded="false">View provenance record</button>
+      </div>
+    </div>
+
+    <div class="record card pad" id="record" aria-live="polite">
+      <div class="row" style="justify-content:space-between">
+        <h3>Provenance record</h3>
+        <span class="chip gold">Demo record · last updated <span id="recDate"></span></span>
+      </div>
+      <p class="small muted" style="margin:6px 0 12px">What is collected, who supplied it, and what has been independently checked.</p>
+      <div class="table-scroll">
+      <table class="ptable">
+        <thead><tr><th>Field</th><th>Supplied by</th><th>Independent check</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr><td>Maker identity</td><td>Provider</td><td>Local institution (in pilot)</td><td><span class="status pending">Not verified</span></td></tr>
+          <tr><td>Place of production</td><td>Provider</td><td>Workshop visit</td><td><span class="status pending">To be verified</span></td></tr>
+          <tr><td>Production method (handloom)</td><td>Provider</td><td>Craft review</td><td><span class="status pending">To be verified</span></td></tr>
+          <tr><td>Materials (silk, zari)</td><td>Provider</td><td>Material testing</td><td><span class="status pending">To be verified</span></td></tr>
+          <tr><td>GI-registered producer</td><td>GI registry</td><td>Registry lookup</td><td><span class="status pending">Not checked</span></td></tr>
+          <tr><td>Price at first sale</td><td>Transaction</td><td>Recorded automatically</td><td><span class="status demo">Demo value</span></td></tr>
+          <tr><td>Maker's share of price</td><td>Transaction</td><td>Settlement record</td><td><span class="status demo">Demo value</span></td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p class="note" style="margin-top:12px">A Geographical Indication certifies origin, not the individual weaver. Maker-level fields need their own verification. Nothing on this page is authenticated.</p>
+    </div>
+
+    <div class="row" style="margin-top:24px">
+      <button class="btn btn-primary" data-go="network">How the network works</button>
+      <button class="btn btn-secondary" data-go="discover" data-tab="crafts">More crafts</button>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 09 NETWORK ===== -->
+<section class="screen" id="s-network" aria-labelledby="h-net">
+  <div class="wrap">
+    <div style="text-align:center;max-width:720px;margin:0 auto">
+      <p class="eyebrow">An open layer, not a closed app</p>
+      <h2 id="h-net" style="margin-top:8px">One network, many ways to discover Kashi</h2>
+      <p class="muted" style="margin-top:10px">Participating platforms could connect to shared provider listings and booking information through open interfaces, expanding market access without requiring every provider to run a separate digital storefront.</p>
+    </div>
+    <div class="net">
+      <div class="tier providers">
+        <h3>Verified local providers</h3>
+        <p class="muted">Weavers · Musicians · Boatmen · Home cooks</p>
+      </div>
+      <div class="connector arrow" aria-hidden="true"></div>
+      <div class="tier m2m">
+        <p class="eyebrow" style="color:#E9CF8F">Proposed</p>
+        <h3>Maker-to-Market</h3>
+        <p>Listings · Booking information · Transparent terms · Interoperability</p>
+      </div>
+      <div class="fan" aria-hidden="true">
+        <svg viewBox="0 0 640 34" preserveAspectRatio="none"><g fill="none" stroke="#B8892B" stroke-width="2" stroke-dasharray="6 5"><path d="M320 0 V10 Q320 18 312 18 H115 Q107 18 107 26 V34"/><path d="M320 0 V34"/><path d="M320 0 V10 Q320 18 328 18 H525 Q533 18 533 26 V34"/></g></svg>
+      </div>
+      <div class="channels" role="group" aria-label="Distribution channels">
+        <button class="channel" data-ch="hotels" aria-pressed="false"><span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M3 21V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v4h4a2 2 0 0 1 2 2v10h-6v-4h-4v4H3zm4-14v2h2V7H7zm4 0v2h2V7h-2zm-4 4v2h2v-2H7zm4 0v2h2v-2h-2zm6 2v2h2v-2h-2z"/></svg></span>Hotels</button>
+        <button class="channel" data-ch="platforms" aria-pressed="false"><span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M7 2h10a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zm0 3v13h10V5H7zm4 14v1h2v-1h-2z"/></svg></span>Travel platforms</button>
+        <button class="channel" data-ch="operators" aria-pressed="false"><span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2a5 5 0 0 1 5 5c0 3.7-5 9-5 9S7 10.7 7 7a5 5 0 0 1 5-5zm0 3a2 2 0 1 0 0 4 2 2 0 0 0 0-4zM4 20h16v2H4z"/></svg></span>Tour operators</button>
+      </div>
+      <p class="channel-explain" id="chExplain">Tap a channel to see how a visitor would reach the same verified listing.</p>
+      <p class="built-on">Built on</p>
+      <div class="tier grid">
+        <h3>National Destination Digital Knowledge Grid</h3>
+        <p class="muted">Heritage documentation proposed in the Union Budget 2026–27. Maker-to-Market is a recommended marketplace layer on top of it.</p>
+      </div>
+    </div>
+    <p class="note" style="justify-content:center;text-align:center;margin-top:20px">Proposed marketplace extension inspired by open-network commerce models such as ONDC. Not an existing government service.</p>
+    <div class="row" style="justify-content:center;margin-top:18px">
+      <button class="btn btn-primary" data-go="pilot">See the pilot that proves it</button>
+      <button class="btn btn-secondary" data-go="impact">Back to impact</button>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 10 PILOT ===== -->
+<section class="screen" id="s-pilot" aria-labelledby="h-pilot">
+  <div class="wrap">
+    <p class="eyebrow">The pilot that proves it</p>
+    <h2 id="h-pilot" style="margin-top:8px;max-width:26ch">A 24-month Varanasi pilot. Evidence before scale.</h2>
+    <div class="gantt" aria-hidden="true">
+      <div class="gantt-bar">
+        <div style="width:12.5%;background:#26364A"></div>
+        <div style="width:12.5%;background:#3A6F8F"></div>
+        <div style="width:50%;background:#B8892B"></div>
+        <div style="width:25%;background:#7A1F2B"></div>
+      </div>
+      <div class="gantt-scale"><span>Month 1</span><span>6</span><span>12</span><span>18</span><span>24</span></div>
+    </div>
+    <div class="phases">
+      <div class="phase" style="--c:#26364A"><div class="when">MONTHS 1–3</div><h3>Prepare</h3><p>Baseline survey, community consultation and provider-verification design.</p></div>
+      <div class="phase" style="--c:#3A6F8F"><div class="when">MONTHS 4–6</div><h3>Onboard</h3><p>Prototype testing, provider onboarding and initial marketplace integrations.</p></div>
+      <div class="phase" style="--c:#9C7220"><div class="when">MONTHS 7–18</div><h3>Operate</h3><p>Pilot operation, user feedback and monitoring.</p></div>
+      <div class="phase" style="--c:#7A1F2B"><div class="when">MONTHS 19–24</div><h3>Evaluate</h3><p>Independent evaluation and a scale-up decision, including the option to stop.</p></div>
+    </div>
+
+    <div class="grid2" style="margin-top:28px">
+      <div>
+        <h3>How success is measured</h3>
+        <p class="small muted" style="margin-top:4px">Compared with a group of non-participating makers, so gains are not confused with a general tourism boom.</p>
+        <div class="metrics">
+          <div class="metric"><p><span class="n">1</span>Change in makers' median real income</p><span class="status pending">Baseline required</span></div>
+          <div class="metric"><p><span class="n">2</span>Share of booking revenue reaching providers after disclosed costs</p><span class="status demo">To be measured</span></div>
+          <div class="metric"><p><span class="n">3</span>Completed paid experiences and repeat bookings</p><span class="status demo">To be measured</span></div>
+          <div class="metric"><p><span class="n">4</span>Participation of women and locally owned enterprises</p><span class="status demo">To be measured</span></div>
+        </div>
+      </div>
+      <div>
+        <h3>Safeguards</h3>
+        <p class="small muted" style="margin-top:4px">Monitored alongside revenue from day one.</p>
+        <div class="safeguards">
+          <span class="chip maroon">Community consent</span>
+          <span class="chip maroon">Carrying-capacity monitoring</span>
+          <span class="chip maroon">Waste per visitor</span>
+          <span class="chip maroon">Grievance redressal</span>
+        </div>
+        <div class="card pad" style="margin-top:16px">
+          <p class="eyebrow">For evaluators</p>
+          <p style="margin-top:6px">See how an independent evaluator would track the pilot, with honest empty states instead of invented results.</p>
+          <button class="btn btn-secondary" data-go="dashboard" style="margin-top:12px">Open pilot dashboard</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="closing">
+      <p>The goal is not simply to bring more visitors to Kashi. It is to help the people who keep Kashi alive benefit more fairly from those visits.</p>
+      <div class="row">
+        <button class="btn btn-light" data-go="welcome" id="restart">Restart the journey</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 11 DASHBOARD ===== -->
+<section class="screen" id="s-dashboard" aria-labelledby="h-dash">
+  <div class="wrap">
+    <button class="back" data-go="pilot">← The pilot</button>
+    <p class="eyebrow" style="margin-top:10px">Pilot dashboard · evaluator view</p>
+    <h2 id="h-dash" style="margin-top:8px">What would be measured, and what is not yet known</h2>
+    <p class="muted" style="margin-top:8px;max-width:62ch">This is a proposal, not evidence of impact. Every indicator below is empty until the pilot collects a baseline. No results, projections or testimonials are shown.</p>
+    <div class="dash">
+      <div class="kpi"><div class="k">Providers onboarded</div><div class="flat">No data</div><div class="v">Not yet measured</div></div>
+      <div class="kpi"><div class="k">Completed bookings</div><div class="flat">No data</div><div class="v">Not yet measured</div></div>
+      <div class="kpi"><div class="k">Change in median real income</div><div class="flat">No data</div><div class="v">Baseline required</div></div>
+      <div class="kpi"><div class="k">Revenue reaching providers</div><div class="flat">No data</div><div class="v">To be measured</div></div>
+      <div class="kpi"><div class="k">Community consent and carrying capacity</div><div class="flat">No data</div><div class="v">Monitoring framework required</div></div>
+      <div class="kpi"><div class="k">Comparison group</div><div class="flat">No data</div><div class="v">Non-participating makers, to be sampled</div></div>
+    </div>
+    <div class="row" style="margin-top:22px">
+      <button class="btn btn-primary" data-go="pilot">Back to the pilot</button>
+      <button class="btn btn-secondary" data-go="welcome">Restart the journey</button>
+    </div>
+  </div>
+</section>
+
+<!-- ===== MY DEMO BOOKING ===== -->
+<section class="screen" id="s-mybooking" aria-labelledby="h-mine">
+  <div class="wrap narrow" style="max-width:640px" id="mineBody"></div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <b>Maker-to-Market · A Living Kashi</b> is an illustrative prototype of the recommendation in “From Footfall to Value: Letting Culture Pay the People Who Keep It Alive” by Dev Khemani (VBYL 2027). Listings, people, prices and records are samples. No real booking or payment is made, no personal data is stored, and this is not a government service.
+  </div>
+</footer>
+
+<nav class="bottomnav" aria-label="Main">
+  <button data-go="discover" data-nav="discover"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" d="M12 3l2.6 6.4L21 12l-6.4 2.6L12 21l-2.6-6.4L3 12l6.4-2.6z"/></svg>Discover</button>
+  <button data-go="discover" data-tab="makers" data-nav="makers"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4" fill="none" stroke="currentColor" stroke-width="2"/><path d="M4 21c1-4.5 4.5-6.5 8-6.5s7 2 8 6.5" fill="none" stroke="currentColor" stroke-width="2"/></svg>Makers</button>
+  <button data-go="mybooking" data-nav="mybooking"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="16" height="17" rx="3" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8 2v4M16 2v4M4 10h16" stroke="currentColor" stroke-width="2"/></svg>My booking</button>
+  <button data-modal="how" data-nav="how"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.7.3-1 .8-1 1.5V14M12 17v.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>How it works</button>
+</nav>
+
+<!-- ===== HOW IT WORKS ===== -->
+<div class="modal" id="how" role="dialog" aria-modal="true" aria-labelledby="h-how">
+  <div class="sheet">
+    <button class="close" data-close aria-label="Close">✕</button>
+    <p class="eyebrow">How it works</p>
+    <h2 id="h-how" style="margin-top:8px">Three steps, fully transparent</h2>
+    <ol class="how">
+      <li><span class="n">1</span><div><b>Discover local hosts.</b><br>Find experiences and crafts offered by makers in Varanasi, through this site or any hotel, travel platform or tour operator connected to the network.</div></li>
+      <li><span class="n">2</span><div><b>Book on clear terms.</b><br>See the price, the platform fee, the provider payout, the refund policy and the community guidelines before you confirm.</div></li>
+      <li><span class="n">3</span><div><b>Know what you are supporting.</b><br>Each booking shows how the money is split, and craft products link to a provenance record that states what has and has not been verified.</div></li>
+    </ol>
+    <p class="note">This is an illustrative prototype. No real bookings or payments take place and no personal information is collected.</p>
+    <div class="row" style="margin-top:16px">
+      <button class="btn btn-primary" data-go="discover" data-close>Start discovering</button>
+      <button class="btn btn-secondary" data-close>Close</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  const FEE_RATE = 0.05;
+  const inr = n => "₹" + Math.round(n).toLocaleString("en-IN");
+
+  /* ---------- illustrations ---------- */
+  const ART = {
+    loom: `<svg viewBox="0 0 400 300" preserveAspectRatio="xMidYMid slice"><rect width="400" height="300" fill="url(#warp)"/>
+      <rect x="0" y="150" width="400" height="150" fill="url(#buta)"/>
+      <rect x="0" y="142" width="400" height="16" fill="url(#border)"/>
+      <rect x="30" y="118" width="340" height="12" rx="6" fill="#8B6A4E"/><rect x="30" y="118" width="340" height="4" rx="2" fill="#B08A63"/>
+      <path d="M150 100 l100 0 l-12 14 h-76z" fill="#C9A36A"/><rect x="196" y="90" width="8" height="12" fill="#8B6A4E"/>
+      <circle cx="320" cy="60" r="70" fill="#F2C98A" opacity=".12"/></svg>`,
+    music: `<svg viewBox="0 0 400 300" preserveAspectRatio="xMidYMid slice"><rect width="400" height="300" fill="#26364A"/>
+      <g fill="none" stroke="#B8892B" opacity=".55"><circle cx="270" cy="160" r="40" stroke-width="2"/><circle cx="270" cy="160" r="70" stroke-width="1.5"/><circle cx="270" cy="160" r="100" stroke-width="1.2"/><circle cx="270" cy="160" r="130" stroke-width="1"/></g>
+      <g transform="rotate(-28 200 170)"><ellipse cx="250" cy="205" rx="56" ry="50" fill="#9C5B33"/><ellipse cx="250" cy="205" rx="40" ry="35" fill="#B8733F"/>
+      <rect x="50" y="196" width="170" height="18" rx="6" fill="#7A4425"/><rect x="50" y="200" width="170" height="3" fill="#E9CF8F"/>
+      <g fill="#E9CF8F"><rect x="70" y="190" width="3" height="30"/><rect x="100" y="190" width="3" height="30"/><rect x="130" y="190" width="3" height="30"/><rect x="160" y="190" width="3" height="30"/></g>
+      <circle cx="60" cy="205" r="14" fill="#9C5B33"/></g>
+      <g fill="#E9CF8F" opacity=".8"><circle cx="90" cy="70" r="3"/><circle cx="120" cy="50" r="2"/><circle cx="340" cy="60" r="2.5"/></g></svg>`,
+    boat: `<svg viewBox="0 0 400 300" preserveAspectRatio="xMidYMid slice"><rect width="400" height="300" fill="url(#dawnSky)"/>
+      <circle cx="290" cy="150" r="90" fill="url(#sunGlow)"/><circle cx="290" cy="155" r="22" fill="#FFF1CF"/>
+      <path d="M0 175 L0 140 L40 140 L40 128 L80 128 L80 146 L120 146 L120 122 L135 110 L150 122 L150 150 L200 150 L200 172 Z" fill="#3B2E3C"/>
+      <rect y="170" width="400" height="130" fill="url(#river)"/>
+      <rect x="278" y="170" width="24" height="110" fill="#FCE3AE" opacity=".35"/>
+      <g fill="#2A2232"><path d="M120 225 q70 18 140 0 l-12 14 h-116 z"/><rect x="176" y="190" width="3" height="36"/><path d="M179 192 l30 30 h-30z" opacity=".85"/><circle cx="150" cy="214" r="6"/><rect x="145" y="218" width="10" height="10" rx="3"/></g>
+      <g stroke="#FFE8B8" stroke-width="2" opacity=".55"><path d="M260 200h60"/><path d="M270 225h40"/></g></svg>`,
+    weaverPortrait: `<svg viewBox="0 0 400 500" preserveAspectRatio="xMidYMid slice"><rect width="400" height="500" fill="#EFE3CF"/>
+      <rect x="0" y="0" width="400" height="500" fill="url(#warp)" opacity=".18"/>
+      <rect x="250" y="40" width="110" height="140" rx="6" fill="#F7E2B5" opacity=".65"/><path d="M305 40v140M250 110h110" stroke="#C9A36A" stroke-width="3"/>
+      <rect x="30" y="250" width="340" height="14" rx="7" fill="#7A5638"/><rect x="40" y="264" width="12" height="190" fill="#6B4A30"/><rect x="348" y="264" width="12" height="190" fill="#6B4A30"/>
+      <rect x="60" y="270" width="280" height="120" fill="url(#buta)"/><rect x="60" y="270" width="280" height="10" fill="url(#border)"/>
+      <g stroke="#E2C27A" stroke-width="1" opacity=".7">${Array.from({length:28},(_,i)=>`<line x1="${64+i*10}" y1="150" x2="${64+i*10}" y2="270"/>`).join("")}</g>
+      <rect x="30" y="140" width="340" height="12" rx="6" fill="#7A5638"/>
+      <g><path d="M120 500 C122 420 150 372 205 362 C262 372 290 420 292 500 Z" fill="#26364A"/>
+      <path d="M150 400 C120 380 100 350 92 330 l16 -8 c12 20 30 40 56 52z" fill="#8C5A3C"/>
+      <path d="M262 400 C292 380 312 350 318 330 l-16 -8 c-10 20 -28 40 -54 52z" fill="#8C5A3C"/>
+      <rect x="194" y="330" width="22" height="30" rx="8" fill="#7A4E34"/>
+      <ellipse cx="205" cy="300" rx="38" ry="42" fill="#231A17"/>
+      <path d="M168 300 c0 -30 18 -44 37 -44 s37 14 37 44 c-10 -10 -24 -14 -37 -14 s-27 4 -37 14z" fill="#31241F"/>
+      <path d="M150 372 c30 14 80 14 110 0" stroke="#B8892B" stroke-width="5" fill="none"/></g>
+      <rect x="0" y="470" width="400" height="30" fill="#5E4330" opacity=".5"/>
+      <rect x="0" y="440" width="400" height="60" fill="#7A1F2B" opacity=".08"/></svg>`,
+    musicianPortrait: `<svg viewBox="0 0 400 500" preserveAspectRatio="xMidYMid slice"><rect width="400" height="500" fill="#26364A"/>
+      <g fill="none" stroke="#B8892B" opacity=".35"><circle cx="200" cy="230" r="120" stroke-width="2"/><circle cx="200" cy="230" r="170" stroke-width="1.5"/></g>
+      <path d="M90 500 C95 400 140 340 200 334 C260 340 305 400 310 500Z" fill="#7A1F2B"/>
+      <path d="M120 420 c40 16 120 16 160 0" stroke="#E9CF8F" stroke-width="4" fill="none" opacity=".7"/>
+      <rect x="188" y="300" width="24" height="34" rx="9" fill="#7A4E34"/>
+      <ellipse cx="200" cy="268" rx="40" ry="44" fill="#1E1A22"/>
+      <path d="M160 268 c0 -32 18 -46 40 -46 s40 14 40 46 c-12 -10 -26 -14 -40 -14 s-28 4 -40 14z" fill="#2B2530"/>
+      <g transform="rotate(-35 200 400)"><ellipse cx="270" cy="430" rx="52" ry="46" fill="#9C5B33"/><rect x="60" y="420" width="170" height="16" rx="6" fill="#7A4425"/><rect x="60" y="424" width="170" height="3" fill="#E9CF8F"/></g></svg>`,
+    boatmanPortrait: `<svg viewBox="0 0 400 500" preserveAspectRatio="xMidYMid slice"><rect width="400" height="500" fill="url(#dawnSky)"/>
+      <circle cx="300" cy="200" r="110" fill="url(#sunGlow)"/><rect y="300" width="400" height="200" fill="url(#river)"/>
+      <path d="M40 420 q160 40 320 0 l-26 30 h-268z" fill="#2A2232"/>
+      <path d="M150 420 C150 360 170 330 205 324 C245 330 262 370 262 420Z" fill="#2A2232"/>
+      <ellipse cx="206" cy="290" rx="30" ry="34" fill="#2A2232"/><path d="M172 286 c2 -26 20 -40 34 -40 s32 12 36 38 c-12 -8 -24 -10 -36 -10 s-24 4 -34 12z" fill="#2A2232"/>
+      <rect x="250" y="250" width="6" height="210" fill="#2A2232" transform="rotate(18 253 355)"/>
+      <path d="M150 360 c-14 -10 -24 -24 -28 -38 l10 -4 c6 12 14 22 24 30z" fill="#2A2232"/></svg>`,
+    sari: `<svg viewBox="0 0 400 300" preserveAspectRatio="xMidYMid slice"><rect width="400" height="300" fill="url(#jaal)"/>
+      <path d="M0 220 C120 196 220 240 400 210 L400 300 L0 300 Z" fill="url(#buta)"/>
+      <path d="M0 220 C120 196 220 240 400 210" stroke="url(#border)" stroke-width="20" fill="none"/>
+      <path d="M250 0 C290 90 240 170 320 300" stroke="rgba(255,255,255,.12)" stroke-width="34" fill="none"/></svg>`,
+    stole: `<svg viewBox="0 0 400 300" preserveAspectRatio="xMidYMid slice"><rect width="400" height="300" fill="#EFE3CF"/>
+      <path d="M60 0 C110 100 70 200 130 300 L270 300 C220 200 260 100 210 0Z" fill="url(#buta)"/>
+      <path d="M60 0 C110 100 70 200 130 300" stroke="url(#border)" stroke-width="14" fill="none"/>
+      <path d="M210 0 C260 100 220 200 270 300" stroke="url(#border)" stroke-width="14" fill="none"/></svg>`
+  };
+
+  /* ---------- illustrative data ---------- */
+  const EXP = {
+    loom:  { id:"loom",  title:"Inside a Banarasi Loom", place:"Madanpura, Varanasi", dur:60, price:500, unit:"visitor", max:4,
+             desc:"See how a Banarasi textile is woven and hear the maker explain the craft.", art:"loom", maker:"weaver",
+             times:["10:00","12:00","15:00"], tags:"weaving weaver sari silk loom craft textile banarasi madanpura" },
+    music: { id:"music", title:"An Hour of Banaras Music", place:"Varanasi", dur:45, price:700, unit:"visitor", max:6,
+             desc:"Discover the practice and traditions behind the city's music.", art:"music", maker:"musician",
+             times:["11:00","17:00","18:30"], tags:"music musician sitar gharana riyaz classical raga" },
+    boat:  { id:"boat",  title:"Kashi at First Light", place:"Ganges, Varanasi", dur:60, price:900, unit:"group", max:6,
+             desc:"A locally hosted sunrise boat experience with stories of the city.", art:"boat", maker:"boatman",
+             times:["05:45","06:30"], tags:"boat boatman ganga ganges sunrise river ghats stories storyteller" }
+  };
+  const MAKERS = {
+    weaver: { exp:"loom", heading:"Meet a Banarasi weaver", meta:"Madanpura, Varanasi · Handloom weaving", art:"weaverPortrait",
+      quote:"“Every pattern takes patience. When you visit, I want you to understand not only how a sari is made, but the skill and time that go into it.”",
+      about:"Banarasi brocade is woven on a handloom, with patterns set in advance and silk and zari threads lifted by hand to form motifs such as the buta. A single sari can take weeks of work. Visitors see the warp being prepared, the pattern being woven, and how finishing affects the final piece.",
+      includes:[["loom","Loom demonstration"],["thread","Weaving techniques explained"],["talk","Time for questions"]],
+      facts:[["Duration","60 minutes"],["Group size","Up to 4 visitors"],["Languages","Hindi, Bhojpuri; English on request"],["Accessibility","Ground-floor workshop, seating; narrow lane approach"]],
+      guidelines:["Ask before photographing people, looms or designs.","Some patterns and techniques may be private.","Keep a safe distance from moving parts of the loom."],
+      card:"A weaver in Madanpura who hosts loom-side visits." },
+    musician: { exp:"music", heading:"Meet a Banaras gharana musician", meta:"Varanasi · Hindustani classical music", art:"musicianPortrait",
+      quote:"“Music here is learned over years, from teacher to student. An hour is enough to hear why that matters.”",
+      about:"Varanasi has been a UNESCO Creative City of Music since 2015. The session introduces daily practice (riyaz), the role of the guru–shishya tradition, and a short demonstration of a raga with explanation.",
+      includes:[["music","Short live demonstration"],["thread","Introduction to riyaz"],["talk","Time for questions"]],
+      facts:[["Duration","45 minutes"],["Group size","Up to 6 visitors"],["Languages","Hindi, English"],["Accessibility","Ground-floor room, floor and chair seating"]],
+      guidelines:["Ask before recording audio or video.","Arrive on time; sessions begin with silence.","Remove footwear where requested."],
+      card:"A classical musician who opens their practice to visitors." },
+    boatman: { exp:"boat", heading:"Meet a Ganges boatman and storyteller", meta:"Ganges, Varanasi · Boat hosting and storytelling", art:"boatmanPortrait",
+      quote:"“My family has rowed these ghats for generations. At first light, the city tells its own stories; I help you hear them.”",
+      about:"A locally hosted sunrise boat ride along the ghats, with stories of the city's history, the ghats and daily life on the river. Life jackets are provided and group size is kept small.",
+      includes:[["boat","Sunrise boat ride"],["thread","Stories of the ghats"],["talk","Time for questions"]],
+      facts:[["Duration","60 minutes"],["Group size","Up to 6 per boat"],["Languages","Hindi, Bhojpuri, English"],["Accessibility","Steps to the boat; assistance available"]],
+      guidelines:["Ask before photographing rituals or people on the ghats.","Life jackets must be worn.","Keep the river clean; carry back all waste."],
+      card:"A boatman who hosts small sunrise rides along the ghats." }
+  };
+  const CRAFTS = [
+    { id:"sari", title:"Illustrative Banarasi silk sari", meta:"Craft product · demonstration record", art:"sari", desc:"A product page showing how a QR-linked provenance record would work, including what is and is not verified.", btn:"View provenance", go:"provenance" },
+    { id:"stole", title:"Illustrative brocade stole", meta:"Craft product · sample listing", art:"stole", desc:"A smaller brocade piece from the same loom-side visit. Provenance would follow the same record format.", btn:"View provenance", go:"provenance" }
+  ];
+
+  /* ---------- state ---------- */
+  const state = {
+    exp:"loom", date:null, time:null, visitors:1, lang:"Hindi",
+    booking:null, tab:"experiences", query:""
+  };
+  const exp = () => EXP[state.exp];
+  const maker = () => MAKERS[exp().maker];
+  function price(e = exp(), v = state.visitors){
+    const subtotal = e.unit === "visitor" ? e.price * v : e.price;
+    const fee = Math.round(subtotal * FEE_RATE);
+    return { subtotal, fee, payout: subtotal - fee, total: subtotal };
+  }
+
+  /* ---------- dates ---------- */
+  const DATES = Array.from({length:7}, (_,i) => { const d = new Date(); d.setHours(12,0,0,0); d.setDate(d.getDate()+i+1); return d; });
+  const fmtDay = d => d.toLocaleDateString("en-IN",{weekday:"short"});
+  const fmtDate = d => d.toLocaleDateString("en-IN",{day:"numeric",month:"short"});
+  const fmtFull = d => d.toLocaleDateString("en-IN",{weekday:"long",day:"numeric",month:"long",year:"numeric"});
+
+  /* ---------- routing ---------- */
+  const STEPS = ["welcome","discover","maker","book","review","confirmed","impact","provenance","network","pilot"];
+  const LABELS = {welcome:"Welcome",discover:"Discover",maker:"Meet the maker",book:"Book",review:"Review",confirmed:"Confirmation",impact:"Your impact",provenance:"Provenance",network:"The open network",pilot:"The pilot",dashboard:"Pilot dashboard",mybooking:"My demo booking"};
+  const $ = s => document.querySelector(s);
+  const $$ = s => Array.from(document.querySelectorAll(s));
+
+  function go(route, opts = {}){
+    if (!route) return;
+    if (opts.tab) state.tab = opts.tab;
+    const target = "#/" + route;
+    if (location.hash !== target) { location.hash = target; } else { render(); }
+  }
+  function current(){
+    const r = (location.hash || "").replace(/^#\/?/,"");
+    return (r && document.getElementById("s-"+r)) ? r : "welcome";
+  }
+  function render(){
+    const r = current();
+    $$(".screen").forEach(s => s.classList.toggle("active", s.id === "s-"+r));
+    ({discover:renderDiscover, maker:renderMaker, book:renderBook, review:renderReview,
+      confirmed:renderConfirmed, impact:renderImpact, provenance:renderProvenance, mybooking:renderMine}[r] || (()=>{}))();
+    renderProgress(r);
+    $$("[data-nav]").forEach(b => {
+      const n = b.dataset.nav;
+      const on = (n === "discover" && r === "discover" && state.tab !== "makers") || (n === "makers" && r === "discover" && state.tab === "makers") || (n === r);
+      b.toggleAttribute("aria-current", false);
+      if (on) b.setAttribute("aria-current","page");
+    });
+    document.title = (LABELS[r] ? LABELS[r] + " · " : "") + "Maker-to-Market · A Living Kashi";
+    window.scrollTo(0,0);
+  }
+
+  function renderProgress(r){
+    const idx = STEPS.indexOf(r);
+    const prog = $("#progress");
+    prog.style.display = r === "welcome" ? "none" : "flex";
+    $("#progressLabel").innerHTML = idx >= 0 ? `Step <b>${idx+1}</b> of 10 · ${LABELS[r]}` : `<b>${LABELS[r]}</b>`;
+    $("#dots").innerHTML = STEPS.map((s,i) =>
+      `<button class="${i<idx?"done":""} ${i===idx?"now":""}" data-go="${s}" aria-label="Step ${i+1}: ${LABELS[s]}"${i===idx?' aria-current="step"':""}></button>`).join("");
+  }
+
+  /* ---------- 02 discover ---------- */
+  function listingCard(e){
+    const m = MAKERS[e.maker];
+    return `<article class="card listing">
+      <div class="art" aria-hidden="true">${ART[e.art]}<span class="chip gold tag">Sample listing</span></div>
+      <div class="body">
+        <h3>${e.title}</h3>
+        <div class="meta"><span>${e.place}</span><span>·</span><span>${e.dur} minutes</span></div>
+        <p>${e.desc}</p>
+        <p class="price">${inr(e.price)} <small>per ${e.unit} · illustrative</small></p>
+        <div class="actions">
+          <button class="btn btn-primary" data-pick="${e.id}" data-go="maker">${e.id==="loom" ? "Meet the maker" : "View experience"}</button>
+        </div>
+        <p class="small muted">Sample listing — not a live offer.</p>
+      </div></article>`;
+  }
+  function makerCard(key){
+    const m = MAKERS[key], e = EXP[m.exp];
+    return `<article class="card listing">
+      <div class="art" aria-hidden="true">${ART[m.art]}<span class="chip maroon tag">Illustrative profile</span></div>
+      <div class="body">
+        <h3>${m.heading.replace("Meet ","").replace(/^a /,"A ").replace(/^an /,"An ")}</h3>
+        <div class="meta"><span>${m.meta}</span></div>
+        <p>${m.card}</p>
+        <div class="actions"><button class="btn btn-primary" data-pick="${e.id}" data-go="maker">Meet the maker</button></div>
+        <p class="small muted">Not a real person or verified provider.</p>
+      </div></article>`;
+  }
+  function craftCard(c){
+    return `<article class="card listing">
+      <div class="art" aria-hidden="true">${ART[c.art]}<span class="chip gold tag">Demonstration</span></div>
+      <div class="body">
+        <h3>${c.title}</h3>
+        <div class="meta"><span>${c.meta}</span></div>
+        <p>${c.desc}</p>
+        <div class="actions"><button class="btn btn-primary" data-go="${c.go}">${c.btn}</button></div>
+        <p class="small muted">Not independently authenticated.</p>
+      </div></article>`;
+  }
+  function renderDiscover(){
+    $$(".tabs [role=tab]").forEach(t => t.setAttribute("aria-selected", t.dataset.cat === state.tab ? "true" : "false"));
+    const q = state.query.trim().toLowerCase();
+    const hit = s => !q || s.toLowerCase().includes(q);
+    let html = "";
+    if (state.tab === "experiences") {
+      html = Object.values(EXP).filter(e => hit(e.title+" "+e.desc+" "+e.place+" "+e.tags)).map(listingCard).join("");
+    } else if (state.tab === "makers") {
+      html = Object.keys(MAKERS).filter(k => { const m = MAKERS[k]; return hit(m.heading+" "+m.meta+" "+m.card+" "+EXP[m.exp].tags); }).map(makerCard).join("");
+    } else {
+      html = CRAFTS.filter(c => hit(c.title+" "+c.desc+" sari silk brocade weaving craft")).map(craftCard).join("");
+    }
+    $("#cards").innerHTML = html || `<div class="empty" style="grid-column:1/-1">No sample listings match “${escapeHtml(state.query)}”. Try “weaving”, “music” or “boat”.</div>`;
+    if ($("#search").value !== state.query) $("#search").value = state.query;
+    $("#clearSearch").hidden = !state.query;
+  }
+  function escapeHtml(s){ return s.replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
+
+  /* ---------- 03 maker ---------- */
+  const INC_ICONS = {
+    loom:`<svg width="22" height="22" viewBox="0 0 24 24"><g stroke="#7A1F2B" stroke-width="2" fill="none"><path d="M5 4v16M9 4v16M13 4v16M17 4v16"/><path d="M3 9h18M3 15h18" stroke="#B8892B"/></g></svg>`,
+    thread:`<svg width="22" height="22" viewBox="0 0 24 24"><g stroke="#7A1F2B" stroke-width="2" fill="none"><path d="M4 18c4-8 12-4 16-12"/><circle cx="6" cy="6" r="2.5"/><path d="M14 18h6" stroke="#B8892B"/></g></svg>`,
+    talk:`<svg width="22" height="22" viewBox="0 0 24 24"><g stroke="#7A1F2B" stroke-width="2" fill="none"><path d="M4 5h16v10H9l-5 4z"/><path d="M8 9h8M8 12h5" stroke="#B8892B"/></g></svg>`,
+    music:`<svg width="22" height="22" viewBox="0 0 24 24"><g stroke="#7A1F2B" stroke-width="2" fill="none"><path d="M9 18V6l10-2v12"/><circle cx="6.5" cy="18" r="2.5"/><circle cx="16.5" cy="16" r="2.5"/></g></svg>`,
+    boat:`<svg width="22" height="22" viewBox="0 0 24 24"><g stroke="#7A1F2B" stroke-width="2" fill="none"><path d="M3 15c6 3 12 3 18 0l-2 4H5z"/><path d="M12 4v10M12 5l5 8h-5" stroke="#B8892B"/></g></svg>`
+  };
+  function renderMaker(){
+    const m = maker();
+    $("#makerArt").innerHTML = ART[m.art];
+    $("#h-maker").textContent = m.heading;
+    $("#makerMeta").textContent = m.meta;
+    $("#makerQuote").textContent = m.quote;
+    $("#makerAbout").textContent = m.about;
+    $("#makerIncludes").innerHTML = m.includes.map(([ic,t]) => `<div class="include"><div class="ic">${INC_ICONS[ic]}</div><p>${t}</p></div>`).join("");
+    $("#makerFacts").innerHTML = m.facts.map(([k,v]) => `<div class="fact"><div class="k">${k}</div><div class="v">${v}</div></div>`).join("");
+    $("#makerGuidelines").innerHTML = m.guidelines.map(g => `<li>${g}</li>`).join("");
+  }
+
+  /* ---------- 04 book ---------- */
+  function renderBook(){
+    const e = exp();
+    if (state.visitors > e.max) state.visitors = e.max;
+    if (state.time && !e.times.includes(state.time)) state.time = null;
+    $("#bookExpName").textContent = `${e.title} · ${e.place} · hosted by an illustrative provider`;
+    $("#dateChoice").innerHTML = DATES.map((d,i) =>
+      `<button data-date="${i}" aria-pressed="${state.date===i}">${fmtDay(d)}<small>${fmtDate(d)}</small></button>`).join("");
+    $("#timeChoice").innerHTML = e.times.map(t =>
+      `<button data-time="${t}" aria-pressed="${state.time===t}">${t}<small>${+t.slice(0,2) < 12 ? "morning" : +t.slice(0,2) < 17 ? "afternoon" : "evening"}</small></button>`).join("");
+    $("#durChip").textContent = `${e.dur} minutes (set by the provider)`;
+    $("#lang").value = state.lang;
+    updateSummary();
+  }
+  function updateSummary(){
+    const e = exp(), p = price();
+    $("#visCount").textContent = state.visitors;
+    $("#visMinus").disabled = state.visitors <= 1;
+    $("#visPlus").disabled = state.visitors >= e.max;
+    $("#visHint").textContent = e.unit === "group" ? `Priced per group · up to ${e.max} people` : `${inr(e.price)} per visitor · up to ${e.max}`;
+    $("#sumTitle").textContent = e.title;
+    $("#sumDate").textContent = state.date === null ? "Select a date" : fmtDate(DATES[state.date]) + ", " + fmtDay(DATES[state.date]);
+    $("#sumTime").textContent = state.time || "Select a time";
+    $("#sumVis").textContent = state.visitors + (state.visitors === 1 ? " visitor" : " visitors");
+    $("#sumDur").textContent = e.dur + " min";
+    $("#sumLang").textContent = state.lang;
+    $("#sumPrice").textContent = inr(p.subtotal) + (e.unit === "group" ? " per group" : "");
+    $("#bookErr").textContent = "";
+  }
+
+  /* ---------- 05 review ---------- */
+  function renderReview(){
+    const e = exp(), p = price();
+    const qty = e.unit === "visitor" ? `${state.visitors} × ${inr(e.price)}` : `1 group (${state.visitors} ${state.visitors===1?"person":"people"})`;
+    const when = state.date === null ? "Date not selected" : `${fmtDate(DATES[state.date])}, ${fmtDay(DATES[state.date])} · ${state.time || "time not selected"}`;
+    $("#receipt").innerHTML = `
+      <div class="row" style="justify-content:space-between;align-items:flex-start">
+        <div><p class="eyebrow">Demo receipt</p><h3 style="margin-top:4px">${e.title}</h3><p class="small muted">${when} · ${e.dur} min · ${state.lang}</p></div>
+        <span class="chip gold">Illustrative</span>
+      </div>
+      <div class="divider" style="margin:14px 0 4px"></div>
+      <div class="rline"><span class="l">Experience price<small>${qty}</small></span><span class="a">${inr(p.subtotal)}</span></div>
+      <div class="rline total"><span class="l"><b>Total paid by visitor</b></span><span class="a">${inr(p.total)}</span></div>
+      <p class="subhead">How this amount is split</p>
+      <div class="rline fee"><span class="l">Platform fee<small>${Math.round(FEE_RATE*100)}% of the price, disclosed</small></span><span class="a">${inr(p.fee)}</span></div>
+      <div class="rline payout"><span class="l">Provider payout<small>Settled to the provider via UPI (demo)</small></span><span class="a">${inr(p.payout)}</span></div>
+      <p class="small muted" style="margin-top:8px">${inr(p.fee)} + ${inr(p.payout)} = ${inr(p.total)}</p>`;
+    $("#confirmBtn").disabled = state.date === null || !state.time;
+  }
+
+  /* ---------- 06 confirmed ---------- */
+  function newRef(){ const c = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; let s=""; for(let i=0;i<4;i++) s += c[Math.floor(Math.random()*c.length)]; return "M2M-DEMO-" + s; }
+  function bookingDetails(b){
+    const e = EXP[b.exp], p = price(e, b.visitors);
+    return `<dl class="kv">
+      <dt>Experience</dt><dd>${e.title}</dd>
+      <dt>Where</dt><dd>${e.place}</dd>
+      <dt>Date</dt><dd>${fmtFull(DATES[b.date])}</dd>
+      <dt>Time</dt><dd>${b.time} · ${e.dur} minutes</dd>
+      <dt>Visitors</dt><dd>${b.visitors}</dd>
+      <dt>Language</dt><dd>${b.lang}</dd>
+      <dt>Illustrative total</dt><dd>${inr(p.total)}</dd>
+    </dl>`;
+  }
+  function renderConfirmed(){
+    const b = state.booking;
+    if (!b) {
+      $("#confirmBody").innerHTML = `<p class="eyebrow">Step 6 · Confirmation</p><h2 id="h-confirmed" style="margin-top:8px">No demo booking yet</h2>
+        <p class="muted" style="margin-top:10px">Choose a date and time, review the price split, then confirm to see this step.</p>
+        <div class="row" style="justify-content:center;margin-top:18px"><button class="btn btn-primary" data-go="book">Book a demo experience</button><button class="btn btn-secondary" data-go="impact">Skip to your impact</button></div>`;
+      return;
+    }
+    $("#confirmBody").innerHTML = `
+      <div class="tick"><svg width="40" height="40" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="#fff" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <p class="eyebrow">Step 6 · Booking confirmed — demo</p>
+      <h2 id="h-confirmed" style="margin-top:8px">You are booked to meet the maker</h2>
+      <p style="margin:12px 0"><span class="ref">${b.ref}</span></p>
+      <div class="banner"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="none" stroke="#E9CF8F" stroke-width="2"/><path d="M12 7v6M12 16v1" stroke="#E9CF8F" stroke-width="2.4" stroke-linecap="round"/></svg>Prototype demonstration — no real booking or payment has been made.</div>
+      <div class="card pad" style="margin-top:16px;text-align:left">${bookingDetails(b)}</div>
+      <div class="card pad" style="margin-top:12px;text-align:left"><h3 style="font-size:20px">What happens next (in the pilot)</h3>
+        <ol class="steps"><li>The provider confirms the slot within a few hours.</li><li>You receive directions and the community guidelines.</li><li>After the visit, payment is settled to the provider and you can leave feedback.</li></ol></div>
+      <div class="row" style="justify-content:center;margin-top:20px">
+        <button class="btn btn-primary" data-go="impact">View my impact</button>
+        <button class="btn btn-secondary" data-go="discover">Explore more of Kashi</button>
+      </div>`;
+  }
+
+  /* ---------- 07 impact ---------- */
+  function renderImpact(){
+    const b = state.booking;
+    const e = b ? EXP[b.exp] : exp();
+    const v = b ? b.visitors : state.visitors;
+    const p = price(e, v);
+    const provPct = p.payout / p.total * 100, feePct = p.fee / p.total * 100;
+    $("#impTotal").textContent = inr(p.total);
+    $("#impPayout").textContent = inr(p.payout);
+    $("#impFee").textContent = inr(p.fee);
+    $("#segProv").textContent = `Provider ${Math.round(provPct)}%`;
+    $("#segPlat").textContent = `${Math.round(feePct)}%`;
+    $("#impBar").setAttribute("aria-label", `Of ${inr(p.total)}, ${inr(p.payout)} goes to the provider and ${inr(p.fee)} is the platform fee.`);
+    $("#per100").innerHTML = `${b ? "For your demo booking of <b>"+e.title+"</b>" : "For a sample booking of <b>"+e.title+"</b>"}: of every ₹100 paid, <b>₹${Math.round(provPct)}</b> reaches the provider and <b>₹${Math.round(feePct)}</b> is the disclosed platform fee.`;
+    const sp = $("#segProv"), sf = $("#segPlat");
+    sp.style.width = "0%"; sf.style.width = "0%";
+    requestAnimationFrame(() => requestAnimationFrame(() => { sp.style.width = provPct + "%"; sf.style.width = feePct + "%"; }));
+  }
+
+  /* ---------- 08 provenance ---------- */
+  function renderProvenance(){
+    $("#recDate").textContent = new Date().toLocaleDateString("en-IN",{day:"numeric",month:"short",year:"numeric"});
+  }
+  function toggleRecord(open){
+    const rec = $("#record");
+    const isOpen = open === undefined ? !rec.classList.contains("open") : open;
+    rec.classList.toggle("open", isOpen);
+    ["#viewRecord","#qrTag"].forEach(s => $(s).setAttribute("aria-expanded", isOpen));
+    $("#viewRecord").textContent = isOpen ? "Hide provenance record" : "View provenance record";
+    if (isOpen) rec.scrollIntoView({behavior:"smooth", block:"start"});
+  }
+
+  /* ---------- my booking ---------- */
+  function renderMine(){
+    const b = state.booking;
+    $("#mineBody").innerHTML = b ? `
+      <p class="eyebrow">My demo booking</p><h2 id="h-mine" style="margin-top:8px">${EXP[b.exp].title}</h2>
+      <p style="margin:12px 0"><span class="ref">${b.ref}</span></p>
+      <div class="banner">Prototype demonstration — no real booking or payment has been made.</div>
+      <div class="card pad" style="margin-top:16px">${bookingDetails(b)}</div>
+      <div class="row" style="margin-top:18px"><button class="btn btn-primary" data-go="impact">View my impact</button><button class="btn btn-secondary" id="cancelDemo">Cancel demo booking</button></div>`
+    : `<p class="eyebrow">My demo booking</p><h2 id="h-mine" style="margin-top:8px">No demo booking yet</h2>
+      <p class="muted" style="margin-top:10px">Pick an experience, choose a date and time, and confirm a demo booking to see it here. Nothing is saved after you close the page.</p>
+      <div class="row" style="margin-top:18px"><button class="btn btn-primary" data-go="discover">Discover experiences</button></div>`;
+  }
+
+  /* ---------- events ---------- */
+  document.addEventListener("click", ev => {
+    const el = ev.target.closest("button, [data-go]");
+    if (!el) return;
+    if (el.dataset.pick) { if (state.exp !== el.dataset.pick) { state.exp = el.dataset.pick; state.time = null; } }
+    if (el.hasAttribute("data-close")) closeModal();
+    if (el.dataset.modal) { openModal(el.dataset.modal); return; }
+    if (el.dataset.cat) { state.tab = el.dataset.cat; render(); return; }
+    if (el.dataset.date !== undefined) { state.date = +el.dataset.date; renderBook(); return; }
+    if (el.dataset.time) { state.time = el.dataset.time; renderBook(); return; }
+    if (el.dataset.ch) { selectChannel(el.dataset.ch); return; }
+    if (el.dataset.go) {
+      if (el.dataset.go === "discover") state.tab = el.dataset.tab || (el.dataset.nav === "discover" ? "experiences" : state.tab);
+      go(el.dataset.go, {tab: el.dataset.tab});
+    }
+  });
+  $("#visMinus").addEventListener("click", () => { if (state.visitors > 1) { state.visitors--; updateSummary(); } });
+  $("#visPlus").addEventListener("click", () => { if (state.visitors < exp().max) { state.visitors++; updateSummary(); } });
+  $("#lang").addEventListener("change", e => { state.lang = e.target.value; updateSummary(); });
+  $("#agree").addEventListener("change", () => { $("#bookErr").textContent = ""; });
+  $("#search").addEventListener("input", e => { state.query = e.target.value; renderDiscover(); });
+  $("#clearSearch").addEventListener("click", () => { state.query = ""; renderDiscover(); $("#search").focus(); });
+  $("#toReview").addEventListener("click", () => {
+    const missing = [];
+    if (state.date === null) missing.push("a date");
+    if (!state.time) missing.push("a time slot");
+    if (!$("#agree").checked) missing.push("agreement to the community guidelines");
+    if (missing.length) { $("#bookErr").textContent = "Please choose " + missing.join(", ").replace(/, ([^,]*)$/," and $1") + "."; return; }
+    go("review");
+  });
+  $("#confirmBtn").addEventListener("click", () => {
+    if (state.date === null || !state.time) { go("book"); return; }
+    state.booking = { ref:newRef(), exp:state.exp, date:state.date, time:state.time, visitors:state.visitors, lang:state.lang };
+    go("confirmed");
+  });
+  document.addEventListener("click", ev => { if (ev.target.id === "cancelDemo") { state.booking = null; renderMine(); } });
+  $("#exploreCraft").addEventListener("click", () => { const h = $("#aboutCraft"); h.scrollIntoView({behavior:"smooth", block:"start"}); h.focus({preventScroll:true}); });
+  $("#viewRecord").addEventListener("click", () => toggleRecord());
+  $("#qrTag").addEventListener("click", () => toggleRecord(true));
+
+  const CH = {
+    hotels:"A guest at a participating hotel sees the loom visit on the hotel's concierge page. The listing, price and terms come from the same shared record, so the maker manages one listing, not many.",
+    platforms:"A traveller searching a booking app finds the same verified listing through an open interface. The platform earns a disclosed fee; the price and payout terms stay visible.",
+    operators:"A tour operator adds the boat ride to a day itinerary, booking directly against the provider's real availability instead of through informal intermediaries."
+  };
+  function selectChannel(k){
+    $$(".channel").forEach(c => c.setAttribute("aria-pressed", c.dataset.ch === k ? "true" : "false"));
+    $("#chExplain").textContent = CH[k];
+  }
+
+  /* ---------- modal ---------- */
+  let lastFocus = null;
+  function openModal(id){ lastFocus = document.activeElement; const m = document.getElementById(id); m.classList.add("open"); m.querySelector(".close").focus(); }
+  function closeModal(){ $$(".modal.open").forEach(m => m.classList.remove("open")); if (lastFocus) lastFocus.focus(); }
+  $$(".modal").forEach(m => m.addEventListener("click", e => { if (e.target === m) closeModal(); }));
+  document.addEventListener("keydown", e => { if (e.key === "Escape") closeModal(); });
+
+  window.addEventListener("hashchange", render);
+  render();
+})();
+</script>
+</body>
+</html>
